@@ -17,18 +17,29 @@ public class IssueService {
     @Autowired
     private UserRepository userRepository;
 
-    // Quando creiamo una issue, ci serve sapere CHI la sta creando (reporterId)
+    @Autowired // <--- NUOVO: Iniettiamo il servizio di Audit
+    private AuditLogService auditLogService;
+
     public Issue createIssue(Long reporterId, Issue issue) {
-        // 1. Cerchiamo l'utente nel database
+        // 1. Cerchiamo l'utente
         User reporter = userRepository.findById(reporterId)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato!"));
 
-        // 2. Colleghiamo l'utente alla segnalazione
+        // 2. Prepariamo la segnalazione
         issue.setReporter(reporter);
-        issue.setStatus("OPEN"); // Impostiamo lo stato iniziale di default
+        issue.setStatus("OPEN");
 
         // 3. Salviamo la segnalazione
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+
+        // 4. <--- NUOVO: Creiamo il log automatico!
+        auditLogService.logAction(
+                "CREATE_ISSUE",
+                savedIssue.getId(),
+                "Created by user: " + reporter.getEmail()
+        );
+
+        return savedIssue;
     }
 
     public List<Issue> getAllIssues() {
