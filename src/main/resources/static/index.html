@@ -12,24 +12,31 @@
 
         /* Stile del Form */
         .form-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            background: white; padding: 25px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px;
         }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input, select, textarea {
             width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;
         }
-        button {
+        button.submit-btn {
             background-color: #3498db; color: white; border: none; padding: 10px 20px;
             border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;
         }
-        button:hover { background-color: #2980b9; }
+        button.submit-btn:hover { background-color: #2980b9; }
 
-        /* Stile delle Card (Segnalazioni) */
+        /* NUOVO: Stile per i bottoni Filtro */
+        .filter-container { text-align: center; margin-bottom: 20px; }
+        .filter-btn {
+            padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px;
+            cursor: pointer; font-weight: bold; background-color: #ddd; color: #555;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover { background-color: #ccc; }
+        .filter-btn.active { background-color: #2c3e50; color: white; }
+
+        /* Stile delle Card */
         .card {
             background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #ccc;
@@ -72,11 +79,17 @@
                     <option value="FEATURE">Feature (Nuova idea)</option>
                 </select>
             </div>
-            <button type="submit">Invia Segnalazione</button>
+            <button type="submit" class="submit-btn">Invia Segnalazione</button>
         </form>
     </div>
 
     <hr style="border: 0; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterIssues('ALL')">Tutti</button>
+        <button class="filter-btn" onclick="filterIssues('BUG')">Solo Bug 🐞</button>
+        <button class="filter-btn" onclick="filterIssues('FEATURE')">Solo Feature 💡</button>
+    </div>
 
     <div id="issues-list">
         <p style="text-align: center;">Caricamento...</p>
@@ -85,56 +98,71 @@
 
 <script>
     const API_URL = '/api/issues';
+    let allIssues = []; // Variabile per salvare tutti i dati in memoria
 
-    // 1. Funzione per caricare la lista (GET)
+    // 1. Carica i dati dal server
     async function loadIssues() {
         try {
             const response = await fetch(API_URL);
-            const issues = await response.json();
-
-            const list = document.getElementById('issues-list');
-            list.innerHTML = '';
-
-            if(issues.length === 0) {
-                list.innerHTML = '<p style="text-align:center">Nessuna segnalazione trovata.</p>';
-                return;
-            }
-
-            // Ordiniamo: le più nuove in alto (invertiamo l'array)
-            issues.reverse().forEach(issue => {
-                const div = document.createElement('div');
-                div.className = `card ${issue.type}`;
-                div.innerHTML = `
-                    <span class="badge bg-${issue.type}">${issue.type}</span>
-                    <h3>${issue.title}</h3>
-                    <p>${issue.description}</p>
-                    <small>
-                        Segnalato da: <strong>${issue.reporter.email}</strong>
-                        | Stato: <b>${issue.status}</b>
-                    </small>
-                `;
-                list.appendChild(div);
-            });
+            allIssues = await response.json(); // Salviamo nella variabile globale
+            renderIssues(allIssues); // Mostriamo tutto
         } catch (error) {
             console.error("Errore:", error);
         }
     }
 
-    // 2. Funzione per creare una segnalazione (POST)
-    document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita che la pagina si ricarichi subito
+    // 2. Funzione per filtrare (chiamata dai bottoni)
+    function filterIssues(type) {
+        // Aggiorna lo stile dei bottoni (rende attivo quello cliccato)
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
 
-        // Raccogliamo i dati dal form
+        if (type === 'ALL') {
+            renderIssues(allIssues);
+        } else {
+            const filtered = allIssues.filter(issue => issue.type === type);
+            renderIssues(filtered);
+        }
+    }
+
+    // 3. Funzione per disegnare le card a schermo
+    function renderIssues(issuesToRender) {
+        const list = document.getElementById('issues-list');
+        list.innerHTML = '';
+
+        if(issuesToRender.length === 0) {
+            list.innerHTML = '<p style="text-align:center">Nessuna segnalazione trovata per questo filtro.</p>';
+            return;
+        }
+
+        // Slice e reverse servono a mostrare i più recenti in alto senza modificare l'array originale
+        issuesToRender.slice().reverse().forEach(issue => {
+            const div = document.createElement('div');
+            div.className = `card ${issue.type}`;
+            div.innerHTML = `
+                <span class="badge bg-${issue.type}">${issue.type}</span>
+                <h3>${issue.title}</h3>
+                <p>${issue.description}</p>
+                <small>
+                    Segnalato da: <strong>${issue.reporter.email}</strong>
+                    | Stato: <b>${issue.status}</b>
+                </small>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    // 4. Invio del form (uguale a prima)
+    document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
         const issueData = {
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
             type: document.getElementById('type').value,
-            priority: "HIGH" // Per ora la mettiamo fissa
+            priority: "HIGH"
         };
 
         try {
-            // NOTA: Usiamo ?reporterId=1 per simulare che siamo Mario Rossi
-            // In un'app reale, questo ID verrebbe dal login
             const response = await fetch(API_URL + '?reporterId=1', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -142,20 +170,14 @@
             });
 
             if (response.ok) {
-                // Se è andato tutto bene: pulisci il form e ricarica la lista
                 document.getElementById('createIssueForm').reset();
-                loadIssues();
-                alert("Segnalazione creata con successo! 🚀");
-            } else {
-                alert("Errore nel salvataggio!");
+                loadIssues(); // Ricarica tutto
+                alert("Segnalazione creata! 🚀");
             }
-        } catch (error) {
-            console.error("Errore:", error);
-            alert("Errore di connessione!");
-        }
+        } catch (error) { console.error("Errore:", error); }
     });
 
-    // Carica la lista all'avvio
+    // Avvio
     loadIssues();
 </script>
 </body>
