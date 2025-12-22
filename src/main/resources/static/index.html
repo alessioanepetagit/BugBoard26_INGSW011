@@ -4,52 +4,33 @@
     <meta charset="UTF-8">
     <title>BugBoard 26</title>
     <style>
-        /* --- STILI CSS --- */
+        /* --- STILI --- */
         body { font-family: 'Segoe UI', sans-serif; padding: 30px; background-color: #f0f2f5; color: #333; }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
-
         .container { max-width: 800px; margin: 0 auto; }
 
-        /* Stile del Form */
-        .form-card {
-            background: white; padding: 25px; border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px;
-        }
+        /* Header con tasto Logout */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-info { font-size: 0.9em; color: #555; }
+        .logout-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
+
+        /* Form e Card */
+        .form-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea {
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;
-        }
-        button.submit-btn {
-            background-color: #3498db; color: white; border: none; padding: 10px 20px;
-            border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;
-        }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button.submit-btn { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
         button.submit-btn:hover { background-color: #2980b9; }
 
-        /* NUOVO: Stile per i bottoni Filtro */
+        /* Filtri */
         .filter-container { text-align: center; margin-bottom: 20px; }
-        .filter-btn {
-            padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px;
-            cursor: pointer; font-weight: bold; background-color: #ddd; color: #555;
-            transition: all 0.2s;
-        }
-        .filter-btn:hover { background-color: #ccc; }
+        .filter-btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px; cursor: pointer; background-color: #ddd; transition: 0.2s; }
         .filter-btn.active { background-color: #2c3e50; color: white; }
 
-        /* Stile delle Card */
-        .card {
-            background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #ccc;
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-2px); }
+        /* Lista */
+        .card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #ccc; }
         .card.BUG { border-left-color: #e74c3c; }
         .card.FEATURE { border-left-color: #2ecc71; }
-
-        .badge {
-            padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8em;
-            font-weight: bold; text-transform: uppercase; float: right;
-        }
+        .badge { padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8em; font-weight: bold; float: right; }
         .bg-BUG { background-color: #e74c3c; }
         .bg-FEATURE { background-color: #2ecc71; }
         h3 { margin-top: 0; }
@@ -59,7 +40,11 @@
 <body>
 
 <div class="container">
-    <h1>🚀 BugBoard 26</h1>
+    <header>
+        <h1>🚀 BugBoard 26</h1>
+        <div id="user-display" class="user-info">
+        </div>
+    </header>
 
     <div class="form-card">
         <h2 style="margin-top:0">Nuova Segnalazione</h2>
@@ -70,89 +55,85 @@
             </div>
             <div class="form-group">
                 <label>Descrizione</label>
-                <textarea id="description" rows="3" placeholder="Dettagli del problema..." required></textarea>
+                <textarea id="description" rows="3" required></textarea>
             </div>
             <div class="form-group">
                 <label>Tipo</label>
                 <select id="type">
-                    <option value="BUG">Bug (Problema)</option>
-                    <option value="FEATURE">Feature (Nuova idea)</option>
+                    <option value="BUG">Bug 🐞</option>
+                    <option value="FEATURE">Feature 💡</option>
                 </select>
             </div>
             <button type="submit" class="submit-btn">Invia Segnalazione</button>
         </form>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid #ddd; margin: 30px 0;">
-
     <div class="filter-container">
         <button class="filter-btn active" onclick="filterIssues('ALL')">Tutti</button>
-        <button class="filter-btn" onclick="filterIssues('BUG')">Solo Bug 🐞</button>
-        <button class="filter-btn" onclick="filterIssues('FEATURE')">Solo Feature 💡</button>
+        <button class="filter-btn" onclick="filterIssues('BUG')">Solo Bug</button>
+        <button class="filter-btn" onclick="filterIssues('FEATURE')">Solo Feature</button>
     </div>
 
-    <div id="issues-list">
-        <p style="text-align: center;">Caricamento...</p>
-    </div>
+    <div id="issues-list"><p style="text-align: center;">Caricamento...</p></div>
 </div>
 
 <script>
-    const API_URL = '/api/issues';
-    let allIssues = []; // Variabile per salvare tutti i dati in memoria
+    // --- 1. CONTROLLO SICUREZZA ---
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+        // Se non c'è l'utente, CALCIO fuori alla pagina di login
+        window.location.href = '/login.html';
+    }
+    const currentUser = JSON.parse(storedUser);
 
-    // 1. Carica i dati dal server
+    // Mostra chi è loggato
+    document.getElementById('user-display').innerHTML = `
+        Ciao, <b>${currentUser.email}</b>
+        <button class="logout-btn" onclick="logout()">Esci</button>
+    `;
+
+    function logout() {
+        localStorage.removeItem('user');
+        window.location.href = '/login.html';
+    }
+
+    // --- 2. LOGICA APP ---
+    const API_URL = '/api/issues';
+    let allIssues = [];
+
     async function loadIssues() {
         try {
             const response = await fetch(API_URL);
-            allIssues = await response.json(); // Salviamo nella variabile globale
-            renderIssues(allIssues); // Mostriamo tutto
-        } catch (error) {
-            console.error("Errore:", error);
-        }
+            allIssues = await response.json();
+            renderIssues(allIssues);
+        } catch (error) { console.error(error); }
     }
 
-    // 2. Funzione per filtrare (chiamata dai bottoni)
     function filterIssues(type) {
-        // Aggiorna lo stile dei bottoni (rende attivo quello cliccato)
         document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
-
-        if (type === 'ALL') {
-            renderIssues(allIssues);
-        } else {
-            const filtered = allIssues.filter(issue => issue.type === type);
-            renderIssues(filtered);
-        }
+        if (type === 'ALL') renderIssues(allIssues);
+        else renderIssues(allIssues.filter(i => i.type === type));
     }
 
-    // 3. Funzione per disegnare le card a schermo
-    function renderIssues(issuesToRender) {
+    function renderIssues(listData) {
         const list = document.getElementById('issues-list');
         list.innerHTML = '';
+        if(listData.length === 0) list.innerHTML = '<p style="text-align:center">Nessun risultato.</p>';
 
-        if(issuesToRender.length === 0) {
-            list.innerHTML = '<p style="text-align:center">Nessuna segnalazione trovata per questo filtro.</p>';
-            return;
-        }
-
-        // Slice e reverse servono a mostrare i più recenti in alto senza modificare l'array originale
-        issuesToRender.slice().reverse().forEach(issue => {
+        listData.slice().reverse().forEach(issue => {
             const div = document.createElement('div');
             div.className = `card ${issue.type}`;
             div.innerHTML = `
                 <span class="badge bg-${issue.type}">${issue.type}</span>
                 <h3>${issue.title}</h3>
                 <p>${issue.description}</p>
-                <small>
-                    Segnalato da: <strong>${issue.reporter.email}</strong>
-                    | Stato: <b>${issue.status}</b>
-                </small>
+                <small>Reporter: <strong>${issue.reporter.email}</strong> | Stato: ${issue.status}</small>
             `;
             list.appendChild(div);
         });
     }
 
-    // 4. Invio del form (uguale a prima)
     document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const issueData = {
@@ -162,22 +143,22 @@
             priority: "HIGH"
         };
 
-        try {
-            const response = await fetch(API_URL + '?reporterId=1', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(issueData)
-            });
+        // USA L'ID DELL'UTENTE LOGGATO, NON PIÙ "1" FISSO!
+        const url = API_URL + '?reporterId=' + currentUser.id;
 
-            if (response.ok) {
-                document.getElementById('createIssueForm').reset();
-                loadIssues(); // Ricarica tutto
-                alert("Segnalazione creata! 🚀");
-            }
-        } catch (error) { console.error("Errore:", error); }
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(issueData)
+        });
+
+        if (response.ok) {
+            document.getElementById('createIssueForm').reset();
+            loadIssues();
+            alert("Segnalazione inviata come " + currentUser.email);
+        }
     });
 
-    // Avvio
     loadIssues();
 </script>
 </body>
