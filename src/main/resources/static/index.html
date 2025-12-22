@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>BugBoard 26</title>
+    <style>
+        /* --- STILI CSS --- */
+        body { font-family: 'Segoe UI', sans-serif; padding: 30px; background-color: #f0f2f5; color: #333; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        /* Stile del Form */
+        .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db; color: white; border: none; padding: 10px 20px;
+            border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;
+        }
+        button:hover { background-color: #2980b9; }
+
+        /* Stile delle Card (Segnalazioni) */
+        .card {
+            background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #ccc;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .card.BUG { border-left-color: #e74c3c; }
+        .card.FEATURE { border-left-color: #2ecc71; }
+
+        .badge {
+            padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8em;
+            font-weight: bold; text-transform: uppercase; float: right;
+        }
+        .bg-BUG { background-color: #e74c3c; }
+        .bg-FEATURE { background-color: #2ecc71; }
+        h3 { margin-top: 0; }
+        small { color: #7f8c8d; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚀 BugBoard 26</h1>
+
+    <div class="form-card">
+        <h2 style="margin-top:0">Nuova Segnalazione</h2>
+        <form id="createIssueForm">
+            <div class="form-group">
+                <label>Titolo</label>
+                <input type="text" id="title" placeholder="Es: Login non funziona" required>
+            </div>
+            <div class="form-group">
+                <label>Descrizione</label>
+                <textarea id="description" rows="3" placeholder="Dettagli del problema..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="type">
+                    <option value="BUG">Bug (Problema)</option>
+                    <option value="FEATURE">Feature (Nuova idea)</option>
+                </select>
+            </div>
+            <button type="submit">Invia Segnalazione</button>
+        </form>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <div id="issues-list">
+        <p style="text-align: center;">Caricamento...</p>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/issues';
+
+    // 1. Funzione per caricare la lista (GET)
+    async function loadIssues() {
+        try {
+            const response = await fetch(API_URL);
+            const issues = await response.json();
+
+            const list = document.getElementById('issues-list');
+            list.innerHTML = '';
+
+            if(issues.length === 0) {
+                list.innerHTML = '<p style="text-align:center">Nessuna segnalazione trovata.</p>';
+                return;
+            }
+
+            // Ordiniamo: le più nuove in alto (invertiamo l'array)
+            issues.reverse().forEach(issue => {
+                const div = document.createElement('div');
+                div.className = `card ${issue.type}`;
+                div.innerHTML = `
+                    <span class="badge bg-${issue.type}">${issue.type}</span>
+                    <h3>${issue.title}</h3>
+                    <p>${issue.description}</p>
+                    <small>
+                        Segnalato da: <strong>${issue.reporter.email}</strong>
+                        | Stato: <b>${issue.status}</b>
+                    </small>
+                `;
+                list.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Errore:", error);
+        }
+    }
+
+    // 2. Funzione per creare una segnalazione (POST)
+    document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evita che la pagina si ricarichi subito
+
+        // Raccogliamo i dati dal form
+        const issueData = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            type: document.getElementById('type').value,
+            priority: "HIGH" // Per ora la mettiamo fissa
+        };
+
+        try {
+            // NOTA: Usiamo ?reporterId=1 per simulare che siamo Mario Rossi
+            // In un'app reale, questo ID verrebbe dal login
+            const response = await fetch(API_URL + '?reporterId=1', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(issueData)
+            });
+
+            if (response.ok) {
+                // Se è andato tutto bene: pulisci il form e ricarica la lista
+                document.getElementById('createIssueForm').reset();
+                loadIssues();
+                alert("Segnalazione creata con successo! 🚀");
+            } else {
+                alert("Errore nel salvataggio!");
+            }
+        } catch (error) {
+            console.error("Errore:", error);
+            alert("Errore di connessione!");
+        }
+    });
+
+    // Carica la lista all'avvio
+    loadIssues();
+</script>
+</body>
+</html>
