@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - BugBoard</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #2c3e50; margin: 0; }
+    .login-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+    h1 { color: #333; margin-bottom: 20px; }
+    input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+    button:hover { background-color: #2980b9; }
+    .error { color: red; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <h1>🔐 Accedi</h1>
+  <p style="color:#666; margin-bottom:20px;">BugBoard 26</p>
+
+  <input type="email" id="email" placeholder="Email (es: mario...)" required>
+  <input type="password" id="password" placeholder="Password" required>
+
+  <button onclick="doLogin()">Entra</button>
+  <p id="error-msg" class="error">Credenziali Sbagliate!</p>
+</div>
+
+<script>
+  async function doLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+
+      try {
+          // Chiamata al tuo nuovo AuthController
+          const response = await fetch('http://localhost:8080/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+          });
+
+          if (response.ok) {
+              // SE LOGIN OK: Salviamo l'utente nella memoria del browser
+              const user = await response.json();
+              localStorage.setItem('user', JSON.stringify(user));
+
+              // E andiamo alla home page
+              window.location.href = 'index.html';
+          } else {
+              // SE ERRORE: Mostriamo messaggio rosso
+              errorMsg.style.display = 'block';
+          }
+      } catch (error) {
+          console.error(error);
+          alert("Errore di connessione!");
+      }
+  }
+</script>
+</body>
+</html>
