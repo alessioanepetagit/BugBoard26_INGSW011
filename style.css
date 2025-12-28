@@ -1,0 +1,243 @@
+/* --- STILI BASE --- */
+body { font-family: 'Segoe UI', sans-serif; padding: 30px; background-color: #f0f2f5; color: #333; }
+.container { max-width: 800px; margin: 0 auto; }
+
+/* Header */
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.user-info { font-size: 0.9em; color: #555; }
+.logout-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
+
+/* Form */
+.form-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: bold; }
+input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+
+/* Input Search Bar Style */
+input#searchBar {
+    background-color: #fff; border: 2px solid #eee; transition: border-color 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+input#searchBar:focus { border-color: #3498db; outline: none; }
+
+button.submit-btn { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.3s;}
+button.submit-btn:hover { background-color: #2980b9; }
+
+/* Filtri */
+.filter-container { text-align: center; margin-bottom: 20px; }
+.filter-btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px; cursor: pointer; background-color: #ddd; transition: 0.2s; }
+.filter-btn.active { background-color: #2c3e50; color: white; }
+
+/* --- CARD STYLE (Aggiornato) --- */
+.card {
+    background: white; padding: 25px; margin-bottom: 20px; border-radius: 12px;
+    border-left: 6px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.15); }
+.card.BUG { border-left-color: #e74c3c; }
+.card.FEATURE { border-left-color: #2ecc71; }
+
+.badge {
+    padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.75em;
+    font-weight: 600; float: right; text-transform: uppercase; letter-spacing: 1px;
+}
+.bg-BUG { background-color: #e74c3c; }
+.bg-FEATURE { background-color: #2ecc71; }
+
+h3 { margin-top: 0; color: #2c3e50; font-weight: 700; margin-bottom: 10px; }
+p { color: #555; line-height: 1.6; }
+
+small {
+    color: #7f8c8d; display: block; margin-top: 15px; padding-top: 10px;
+    border-top: 1px dashed #eee; font-size: 0.9em;
+}
+
+/* Azioni */
+.card-actions { margin-top: 15px; text-align: right; border-top: 1px solid #eee; padding-top: 10px; }
+.btn-action { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }
+.btn-delete { background-color: #ffcccc; color: #c0392b; } .btn-delete:hover { background-color: #ffb3b3; }
+.btn-close { background-color: #d5f5e3; color: #27ae60; } .btn-close:hover { background-color: #abebc6; }
+.btn-edit { background-color: #f39c12; color: white; } .btn-edit:hover { background-color: #d35400; }
+
+/* --- TOAST NOTIFICATIONS (NUOVO) --- */
+#toast-container {
+    position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+}
+.toast {
+    background: #333; color: white; padding: 12px 24px; border-radius: 8px;
+    margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex; align-items: center; animation: slideIn 0.3s ease-out forwards;
+    opacity: 0; transform: translateX(100%);
+}
+.toast.success { border-left: 5px solid #2ecc71; }
+.toast.error { border-left: 5px solid #e74c3c; }
+.toast.info { border-left: 5px solid #3498db; }
+
+@keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateX(100%); }
+}
+
+/* --- LOGIN PAGE STYLE --- */
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2c3e50, #4ca1af); /* Sfondo più scuro ed elegante */
+}
+
+.login-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-logo {
+    font-size: 3em;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* --- DARK MODE --- */
+body.dark-mode {
+    background-color: #121212; /* Sfondo quasi nero */
+    color: #e0e0e0;
+}
+
+body.dark-mode .card,
+body.dark-mode .form-card {
+    background-color: #1e1e1e; /* Card grigio scuro */
+    color: #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Ombre più scure */
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    color: #ffffff;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: white;
+}
+
+body.dark-mode .filter-btn {
+    background-color: #333;
+    color: #ccc;
+}
+
+body.dark-mode .filter-btn.active {
+    background-color: #3498db; /* Blu acceso per il contrasto */
+    color: white;
+}
+
+/* Piccola chicca: cambiamo il bordo delle card in dark mode */
+body.dark-mode .card { border-left-color: #444; }
+body.dark-mode .card.BUG { border-left-color: #ff6b6b; } /* Rosso più chiaro */
+body.dark-mode .card.FEATURE { border-left-color: #51cf66; } /* Verde più chiaro */
+
+/* --- KANBAN BOARD STYLE (Versione Definitiva) --- */
+.kanban-board {
+    display: flex;       /* Mette le colonne una accanto all'altra */
+    gap: 20px;           /* Spazio tra le colonne */
+    padding: 20px 0;
+    align-items: flex-start;
+    overflow-x: auto;    /* Scorrimento orizzontale se serve */
+}
+
+.kanban-column {
+    flex: 1;             /* Larghezza uguale per tutte */
+    background-color: #f4f5f7; /* Grigio chiaro stile Trello */
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 280px;    /* Un po' più strette per evitare scroll eccessivo */
+    max-width: 350px;
+    min-height: 200px;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: 6px;
+    color: white;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Forza il colore bianco nei titoli */
+.column-header h3 {
+    color: white !important;
+    margin: 0;
+}
+
+/* Colori delle intestazioni */
+.header-todo { background-color: #34495e; border-top: 4px solid #2c3e50; }     /* Blu scuro */
+.header-progress { background-color: #f39c12; border-top: 4px solid #d35400; } /* Arancione */
+.header-done { background-color: #27ae60; border-top: 4px solid #1e8449; }     /* Verde */
+
+.count-badge {
+    background-color: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+/* --- NUOVO STILE CARD COMPATTO --- */
+.card {
+    background: white;
+    padding: 12px;       /* Meno spazio interno (era 15px) */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+    border-left: 4px solid #ccc; /* Bordo colorato a sinistra */
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+}
+
+/* Badge più piccoli e stile "pillola" */
+.badge {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    /* I colori bg-BUG e bg-FEATURE sono definiti altrove nel tuo CSS, qui gestiamo solo la forma */
+}
+
+/* --- STILE DEI NUOVI BOTTONI (MINI) --- */
+.mini-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.mini-btn:hover { background: #e2e6ea; transform: scale(1.1); }
+
+/* Colori specifici al passaggio del mouse */
+.btn-progress:hover { background: #fff3cd; border-color: #ffecb5; } /* Giallo */
+.btn-done:hover { background: #d4edda; border-color: #c3e6cb; }     /* Verde */
+.btn-delete:hover { background: #f8d7da; border-color: #f5c6cb; }   /* Rosso */

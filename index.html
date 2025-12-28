@@ -3,54 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>BugBoard 26</title>
-    <style>
-        /* --- STILI BASE --- */
-        body { font-family: 'Segoe UI', sans-serif; padding: 30px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; }
-
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .user-info { font-size: 0.9em; color: #555; }
-        .logout-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
-
-        /* Form */
-        .form-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button.submit-btn { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
-        button.submit-btn:hover { background-color: #2980b9; }
-
-        /* Filtri */
-        .filter-container { text-align: center; margin-bottom: 20px; }
-        .filter-btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px; cursor: pointer; background-color: #ddd; transition: 0.2s; }
-        .filter-btn.active { background-color: #2c3e50; color: white; }
-
-        /* Card Segnalazioni */
-        .card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid #ccc; }
-        .card.BUG { border-left-color: #e74c3c; }
-        .card.FEATURE { border-left-color: #2ecc71; }
-        .badge { padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.8em; font-weight: bold; float: right; }
-        .bg-BUG { background-color: #e74c3c; }
-        .bg-FEATURE { background-color: #2ecc71; }
-        h3 { margin-top: 0; }
-        small { color: #7f8c8d; display: block; margin-top: 10px; }
-
-        /* NUOVO: Stili per i bottoni Azione */
-        .card-actions { margin-top: 15px; text-align: right; border-top: 1px solid #eee; padding-top: 10px; }
-        .btn-action { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; margin-left: 5px; }
-        .btn-delete { background-color: #ffcccc; color: #c0392b; }
-        .btn-delete:hover { background-color: #ffb3b3; }
-        .btn-close { background-color: #d5f5e3; color: #27ae60; }
-        .btn-close:hover { background-color: #abebc6; }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <div class="container">
     <header>
         <h1>🚀 BugBoard 26</h1>
-        <div id="user-display" class="user-info"></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button id="themeToggle" style="background:none; border:none; font-size: 1.5em; cursor: pointer;">🌙</button>
+            <div id="user-display" class="user-info"></div>
+        </div>
     </header>
 
     <div class="form-card">
@@ -71,112 +35,74 @@
                     <option value="FEATURE">Feature 💡</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>Priorità</label>
+                <select id="priority">
+                    <option value="LOW">🟢 Bassa</option>
+                    <option value="MEDIUM" selected>🟡 Media</option>
+                    <option value="HIGH">🔴 Alta</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Assegnato a</label>
+                <select id="assignee">
+                    <option value="Nessuno">👤 Nessuno (Da assegnare)</option>
+                    <option value="Mario Rossi">👨🏻‍🔧 Mario Rossi</option>
+                    <option value="Luigi Verdi">👨🏻‍💻 Luigi Verdi</option>
+                    <option value="Peach">👑 Peach (Project Manager)</option>
+                </select>
+            </div>
             <button type="submit" class="submit-btn">Invia Segnalazione</button>
         </form>
     </div>
 
     <div class="filter-container">
+        <input type="text" id="searchBar" placeholder="🔍 Cerca ticket..." style="width: 100%; max-width: 400px; padding: 10px; margin-bottom: 15px; border-radius: 20px; border: 1px solid #ccc;">
+        <br>
         <button class="filter-btn active" onclick="filterIssues('ALL')">Tutti</button>
+        <button class="filter-btn" onclick="filterIssues('MINE')">🙋🏻‍♂️ I Miei Ticket</button>
         <button class="filter-btn" onclick="filterIssues('BUG')">Solo Bug</button>
         <button class="filter-btn" onclick="filterIssues('FEATURE')">Solo Feature</button>
     </div>
 
-    <div id="issues-list"><p style="text-align: center;">Caricamento...</p></div>
+    <div class="kanban-board">
+
+        <div class="kanban-column">
+            <div class="column-header header-todo">
+                <h3>📌 Da Fare</h3>
+                <span id="count-open" class="count-badge">0</span>
+            </div>
+            <div id="list-open" class="task-list">
+            </div>
+        </div>
+
+        <div class="kanban-column">
+            <div class="column-header header-progress">
+                <h3>🔥 In Corso</h3>
+                <span id="count-progress" class="count-badge">0</span>
+            </div>
+            <div id="list-in-progress" class="task-list">
+            </div>
+        </div>
+
+        <div class="kanban-column">
+            <div class="column-header header-done">
+                <h3>✅ Fatto</h3>
+                <span id="count-done" class="count-badge">0</span>
+            </div>
+            <div id="list-done" class="task-list">
+            </div>
+        </div>
+
+    </div>
+
+</div> ```
+
 </div>
 
-<script>
-    // --- SICUREZZA ---
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) window.location.href = '/login.html';
-    const currentUser = JSON.parse(storedUser);
+<div id="toast-container"></div>
 
-    document.getElementById('user-display').innerHTML = `Ciao, <b>${currentUser.email}</b> <button class="logout-btn" onclick="logout()">Esci</button>`;
+<script src="script.js"></script>
 
-    function logout() {
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
-
-    // --- LOGICA ---
-    const API_URL = 'http://localhost:8080/api/issues';
-    let allIssues = [];
-
-    async function loadIssues() {
-        try {
-            const response = await fetch(API_URL);
-            allIssues = await response.json();
-            renderIssues(allIssues);
-        } catch (error) { console.error(error); }
-    }
-
-    function filterIssues(type) {
-        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        if (type === 'ALL') renderIssues(allIssues);
-        else renderIssues(allIssues.filter(i => i.type === type));
-    }
-
-    function renderIssues(listData) {
-        const list = document.getElementById('issues-list');
-        list.innerHTML = '';
-        if(listData.length === 0) list.innerHTML = '<p style="text-align:center">Nessun risultato.</p>';
-
-        listData.slice().reverse().forEach(issue => {
-            const div = document.createElement('div');
-            div.className = `card ${issue.type}`;
-            div.innerHTML = `
-                <span class="badge bg-${issue.type}">${issue.type}</span>
-                <h3>${issue.title}</h3>
-                <p>${issue.description}</p>
-                <small>Reporter: <strong>${issue.reporter.email}</strong> | Stato: <b>${issue.status}</b></small>
-
-                <div class="card-actions">
-                    ${issue.status === 'OPEN' ? `<button class="btn-action btn-close" onclick="closeIssue(${issue.id})">✅ Risolto</button>` : ''}
-                    <button class="btn-action btn-delete" onclick="deleteIssue(${issue.id})">🗑️ Elimina</button>
-                </div>
-            `;
-            list.appendChild(div);
-        });
-    }
-
-    // NUOVO: Funzione ELIMINA
-    async function deleteIssue(id) {
-        if (!confirm("Sei sicuro di voler eliminare questa segnalazione?")) return;
-        try {
-            const response = await fetch(API_URL + '/' + id, { method: 'DELETE' });
-            if (response.ok) loadIssues();
-            else alert("Errore eliminazione");
-        } catch (e) { console.error(e); }
-    }
-
-    // NUOVO: Funzione CHIUDI
-    async function closeIssue(id) {
-        try {
-            const response = await fetch(API_URL + '/' + id + '/close', { method: 'PUT' });
-            if (response.ok) loadIssues();
-        } catch (e) { console.error(e); }
-    }
-
-    document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const issueData = {
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            type: document.getElementById('type').value,
-            priority: "HIGH"
-        };
-        const response = await fetch(API_URL + '?reporterId=' + currentUser.id, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(issueData)
-        });
-        if (response.ok) {
-            document.getElementById('createIssueForm').reset();
-            loadIssues();
-        }
-    });
-
-    loadIssues();
-</script>
 </body>
 </html>
