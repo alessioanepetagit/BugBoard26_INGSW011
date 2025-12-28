@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "users") // Questo crea la tabella 'users' nel database
-@Data // Lombok: crea in automatico Getters, Setters e toString
-@NoArgsConstructor // Lombok: costruttore vuoto
-@AllArgsConstructor // Lombok: costruttore con tutti i parametri
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -21,7 +21,8 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+    private String name;
 
-    @Column(nullable = false)
-    private String role; // "ADMIN" o "USER"
+    // Gestisce i permessi (ADMIN o USER)
+    private String role;
 }

@@ -28,6 +28,10 @@ public class Issue {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT") // Fondamentale per immagini grandi
+    private String imageBase64;
+
     private String type;
     private String priority;
     private String status;
