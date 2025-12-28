@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp; // Import fondamentale per la data automatica
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "issues")
-@Data
+@Data // Genera in automatico Getter, Setter, toString, ecc.
 @NoArgsConstructor
 @AllArgsConstructor
 public class Issue {
@@ -20,20 +21,28 @@ public class Issue {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT") // TEXT serve per descrizioni lunghe
+    @Column(columnDefinition = "TEXT") // Per descrizioni lunghe
     private String description;
 
-    // Usiamo String per semplicità, ma nel codice controlleremo che siano
-    // valori validi (es. "BUG", "FEATURE" / "TODO", "DONE")
+    // Tipo: BUG, FEATURE
     private String type;
+
+    // Priorità: LOW, MEDIUM, HIGH
     private String priority;
+
+    // Stato: OPEN, IN_PROGRESS, DONE
     private String status;
+
+    // Nome dell'assegnatario (es. "Mario Rossi")
     private String assignee;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now(); // Imposta la data di oggi in automatico
+    // --- GESTIONE DATA AUTOMATICA ---
+    @CreationTimestamp        // Hibernate inserirà la data esatta di salvataggio
+    @Column(updatable = false) // La data di creazione non deve cambiare mai
+    private LocalDateTime createdAt;
+    // --------------------------------
 
-    // RELAZIONE: Molte Issue possono essere create da un solo User
+    // RELAZIONE: Molte Issue possono essere create da un solo User (Reporter)
     @ManyToOne
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
