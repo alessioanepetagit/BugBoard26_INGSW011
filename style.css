@@ -1,48 +1,49 @@
-/* --- STILI BASE --- */
+/* --- STILI BASE E SFONDO SFUMATO --- */
 body {
     font-family: 'Segoe UI', sans-serif;
     padding: 30px;
-    /* NUOVO SFONDO SFUMATO (Come il login) */
+    /* Lo sfondo sfumato che ti piaceva */
     background: linear-gradient(135deg, #2c3e50, #4ca1af);
-    /* Assicura che la sfumatura copra tutta l'altezza dello schermo */
     min-height: 100vh;
     color: #333;
 }
 
-/* 1. MODIFICA FONDAMENTALE: IL CONTENITORE ORA È LARGHISSIMO */
+/* --- IL CONTENITORE PRINCIPALE (FULL WIDTH) --- */
 .container {
-    max-width: 95%; /* Usa quasi tutto lo schermo (era 800px) */
+    max-width: 95%; /* Occupa quasi tutto lo schermo */
     margin: 0 auto;
 }
 
-/* Header */
+/* --- HEADER --- */
 header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+
+/* Titolo BugBoard Bianco */
 header h1 {
-    color: white; /* Testo bianco */
-    margin: 0;    /* Rimuove margini extra */
-    font-weight: 700; /* Un po' più cicciotto */
-    /* Opzionale: una leggera ombreggiatura per farlo "staccare" dallo sfondo */
+    color: white;
+    margin: 0;
+    font-weight: 700;
     text-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
+
 .user-info { font-size: 1.1em; color: #ecf0f1; font-weight: 500; }
 .logout-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
-/* 2. MODIFICA ESTETICA: IL FORM RIMANE COMPATTO E CENTRATO */
+
+/* --- FORM DI CREAZIONE (COMPATTO) --- */
 .form-card {
     background: white;
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-
-    /* Queste righe tengono il form stretto ed elegante */
+    /* Lo teniamo stretto ed elegante */
     max-width: 700px;
-    margin: 0 auto 40px auto; /* Centrato orizzontalmente + spazio sotto */
+    margin: 0 auto 40px auto;
 }
 
 .form-group { margin-bottom: 15px; }
 label { display: block; margin-bottom: 5px; font-weight: bold; }
 input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
 
-/* Input Search Bar Style */
+/* Input Search Bar */
 input#searchBar {
     background-color: #fff; border: 2px solid #eee; transition: border-color 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
@@ -56,25 +57,21 @@ button.submit-btn:hover { background-color: #2980b9; }
 .filter-btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 20px; cursor: pointer; background-color: #ddd; transition: 0.2s; }
 .filter-btn.active { background-color: #2c3e50; color: white; }
 
-/* --- KANBAN BOARD STYLE (FULL WIDTH) --- */
+/* --- KANBAN BOARD (LAYOUT ORIZZONTALE) --- */
 .kanban-board {
     display: flex;
-    flex-direction: row; /* Forza la disposizione orizzontale */
-    flex-wrap: nowrap;   /* VIETA ASSOLUTAMENTE di andare a capo */
-    justify-content: space-between; /* Distribuisce lo spazio */
-    gap: 20px;           /* Spazio tra le colonne */
-    width: 100%;         /* Occupa tutta la larghezza del contenitore */
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
     padding: 20px 0;
-    overflow-x: hidden;  /* Nasconde la barra di scorrimento orizzontale */
+    overflow-x: hidden;
 }
 
 .kanban-column {
-    /* Divide lo spazio in 3 parti uguali */
-    flex: 1;
-
-    /* Permette alla colonna di stringersi se necessario */
+    flex: 1; /* Divide lo spazio in 3 parti uguali */
     min-width: 0;
-
     background-color: #f4f5f7;
     border-radius: 8px;
     padding: 15px;
@@ -82,30 +79,16 @@ button.submit-btn:hover { background-color: #2980b9; }
 }
 
 .column-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border-radius: 6px;
-    color: white;
-    margin-bottom: 15px;
-    font-weight: bold;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px; border-radius: 6px; color: white; margin-bottom: 15px; font-weight: bold;
 }
-
-/* Forza il colore bianco nei titoli */
 .column-header h3 { color: white !important; margin: 0; }
 
-/* Colori delle intestazioni */
 .header-todo { background-color: #34495e; border-top: 4px solid #2c3e50; }
 .header-progress { background-color: #f39c12; border-top: 4px solid #d35400; }
 .header-done { background-color: #27ae60; border-top: 4px solid #1e8449; }
 
-.count-badge {
-    background-color: rgba(255,255,255,0.3);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.9em;
-}
+.count-badge { background-color: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px; font-size: 0.9em; }
 
 /* --- CARD STYLE --- */
 .card {
@@ -118,19 +101,13 @@ button.submit-btn:hover { background-color: #2980b9; }
     transition: transform 0.2s;
     position: relative;
 }
-
 .card:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.1); }
 
 h3 { margin-top: 0; color: #2c3e50; font-weight: 700; margin-bottom: 10px; }
 p { color: #555; line-height: 1.6; }
 
 /* Badge */
-.badge {
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.75em; float: right;
-}
+.badge { text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.75em; float: right; }
 .bg-BUG { background-color: #e74c3c; }
 .bg-FEATURE { background-color: #2ecc71; }
 .card.BUG { border-left-color: #e74c3c; }
@@ -138,20 +115,7 @@ p { color: #555; line-height: 1.6; }
 
 /* Azioni & Mini Bottoni */
 .card-actions { margin-top: 15px; text-align: right; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end; gap: 5px; }
-
-.mini-btn {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 14px;
-}
+.mini-btn { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 14px; }
 .mini-btn:hover { background: #e2e6ea; transform: scale(1.1); }
 .btn-progress:hover { background: #fff3cd; border-color: #ffecb5; }
 .btn-done:hover { background: #d4edda; border-color: #c3e6cb; }
@@ -159,68 +123,52 @@ p { color: #555; line-height: 1.6; }
 
 /* --- TOAST NOTIFICATIONS --- */
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
-.toast {
-    background: #333; color: white; padding: 12px 24px; border-radius: 8px;
-    margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex; align-items: center; animation: slideIn 0.3s ease-out forwards;
-    opacity: 0; transform: translateX(100%);
-}
+.toast { background: #333; color: white; padding: 12px 24px; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; animation: slideIn 0.3s ease-out forwards; opacity: 0; transform: translateX(100%); }
 .toast.success { border-left: 5px solid #2ecc71; }
 .toast.error { border-left: 5px solid #e74c3c; }
 .toast.info { border-left: 5px solid #3498db; }
-
 @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
 
 /* --- LOGIN PAGE --- */
-body.login-page {
-    display: flex; justify-content: center; align-items: center; min-height: 100vh;
-    background: linear-gradient(135deg, #2c3e50, #4ca1af);
-}
-.login-card {
-    background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 100%; max-width: 400px; text-align: center;
-}
+body.login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2c3e50, #4ca1af); }
+.login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
 .login-logo { font-size: 3em; margin-bottom: 10px; display: block; }
 
 /* --- CHAT MODAL --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
-}
-.modal-chat {
-    background: white; width: 400px; height: 500px; border-radius: 12px;
-    display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    overflow: hidden; animation: slideUp 0.3s ease;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-chat { background: white; width: 400px; height: 500px; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; animation: slideUp 0.3s ease; }
 @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .chat-header { background: #2c3e50; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
 .chat-header h3 { margin: 0; font-size: 1.1em; }
 .close-btn { background: none; border: none; color: white; font-size: 1.2em; cursor: pointer; }
 .chat-body { flex: 1; background: #f4f5f7; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 .chat-msg { padding: 10px; border-radius: 8px; max-width: 80%; font-size: 0.9em; line-height: 1.4; }
+
+/* Messaggi di default (Light Mode) */
 .msg-mine { background: #d1e7dd; align-self: flex-end; border-bottom-right-radius: 0; }
 .msg-others { background: white; align-self: flex-start; border-bottom-left-radius: 0; border: 1px solid #e0e0e0; }
 .msg-info { font-size: 0.75em; color: #888; margin-bottom: 2px; display: block; }
+
 .chat-footer { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 10px; }
 #comment-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
 .send-btn { background: #3498db; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; }
 .send-btn:hover { background: #2980b9; }
 
 /* =========================================
-   DARK MODE (AGGIORNATA PER FULL WIDTH)
+   DARK MODE COMPLETA
 ========================================= */
 body.dark-mode { background-color: #121212; color: #e0e0e0; }
 
-/* Il contenitore è trasparente in dark mode per non fare un "blocco" gigante,
-   lasciando che siano solo le card e le colonne a scurirsi */
+/* Rimuove lo sfondo bianco del container per non coprire il gradiente,
+   ma scurisce gli elementi interni */
 body.dark-mode .container { background-color: transparent; box-shadow: none; border: none; }
 
 body.dark-mode .card,
 body.dark-mode .form-card,
 body.dark-mode .modal-chat,
 body.dark-mode .login-card {
-    background-color: #1e1e1e; /* Grigio scuro per i blocchi */
+    background-color: #1e1e1e;
     color: #e0e0e0;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
@@ -241,6 +189,24 @@ body.dark-mode .filter-btn.active { background-color: #3498db; color: white; }
 body.dark-mode .card { border-left-color: #444; }
 body.dark-mode .card.BUG { border-left-color: #ff6b6b; }
 body.dark-mode .card.FEATURE { border-left-color: #51cf66; }
+
+/* --- FIX CHAT DARK MODE (I tuoi messaggi si devono vedere!) --- */
+body.dark-mode .msg-others {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+body.dark-mode .msg-mine {
+    background-color: #005c4b; /* Verde scuro stile WhatsApp */
+    color: #e0e0e0;
+}
+body.dark-mode .chat-footer {
+    background-color: #1e1e1e;
+    border-top-color: #333;
+}
+body.dark-mode .msg-info {
+    color: #aaa;
+}
 
 /* Solo sui cellulari: torna a mettere le colonne una sotto l'altra */
 @media (max-width: 768px) {

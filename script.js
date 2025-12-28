@@ -234,7 +234,7 @@ async function updateStatus(id, newStatus) {
 function deleteIssue(id) {
     Swal.fire({
         title: 'Sei sicuro?',
-        text: "Non potrai recuperare questa segnalazione!",
+        text: "Non potrai recuperare questa segnalazione e i suoi commenti!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -244,12 +244,19 @@ function deleteIssue(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-                Swal.fire('Eliminato!', 'La segnalazione è stata cancellata.', 'success');
-                loadIssues();
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+
+                // 👇 CONTROLLO FONDAMENTALE: È andato tutto bene?
+                if (response.ok) {
+                    Swal.fire('Eliminato!', 'La segnalazione è stata cancellata.', 'success');
+                    loadIssues(); // Aggiorna la board
+                } else {
+                    // Se il server ha detto "NO", mostriamo un errore
+                    Swal.fire('Errore!', 'Impossibile eliminare: forse ci sono problemi col database.', 'error');
+                }
             } catch (error) {
                 console.error("Errore:", error);
-                Swal.fire('Errore!', 'Impossibile eliminare il ticket.', 'error');
+                Swal.fire('Errore!', 'Problema di connessione.', 'error');
             }
         }
     });
@@ -294,7 +301,8 @@ function startEdit(id) {
 document.getElementById('createIssueForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const issueData = {
+    // 1. Raccogliamo i dati dal modulo
+    let issueData = {
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
         type: document.getElementById('type').value,
@@ -303,24 +311,40 @@ document.getElementById('createIssueForm').addEventListener('submit', async (e) 
     };
 
     if (currentEditingId) {
-        // UPDATE
+        // --- MODALITÀ MODIFICA (UPDATE) ---
+
+        // RECUPERIAMO IL TICKET ORIGINALE
+        const originalIssue = allIssues.find(i => i.id === currentEditingId);
+
+        if (originalIssue) {
+            // FIX QUI: Manteniamo lo stato vecchio! Altrimenti torna a "Da Fare"
+            issueData.status = originalIssue.status;
+
+            // Già che ci siamo, manteniamo anche data e reporter originali per sicurezza
+            issueData.createdAt = originalIssue.createdAt;
+            issueData.reporter = originalIssue.reporter;
+        }
+
         const response = await fetch(API_URL + '/' + currentEditingId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(issueData)
         });
+
         if (response.ok) {
             showToast("Modifica salvata con successo!", "success");
             resetForm();
             loadIssues();
         }
     } else {
-        // CREATE
+        // --- MODALITÀ CREAZIONE (CREATE) ---
+        // Qui lo stato sarà gestito dal backend (default OPEN)
         const response = await fetch(API_URL + '?reporterId=' + currentUser.id, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(issueData)
         });
+
         if (response.ok) {
             showToast("Nuovo ticket creato!", "success");
             resetForm();
