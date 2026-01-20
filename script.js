@@ -5,7 +5,7 @@ let allIssues = [];
 let currentEditingId = null;
 let currentFilterMode = 'ALL';
 let existingImageBase64 = null;
-let currentSortOrder = 'DATE_DESC'; // Variabile per l'ordinamento
+let currentSortOrder = 'DATE_DESC';
 
 // Gestione Utente (Login check)
 const storedUser = localStorage.getItem('user');
@@ -16,21 +16,16 @@ const currentUser = JSON.parse(storedUser);
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 PAGINA CARICATA: Inizializzazione script...");
 
-    // Carica i dati iniziali
     loadIssues();
     setupUserInterface();
     setupTheme();
     setupSearch();
 
-    // --- SETUP FORM CREAZIONE UTENTE ---
     const createUserForm = document.getElementById('createUserForm');
     if (createUserForm) {
         createUserForm.addEventListener('submit', handleCreateUser);
-    } else {
-        console.warn("⚠️ Form Creazione Utente non trovato (Sei Admin? Se sì, controlla l'HTML).");
     }
 
-    // --- SETUP FORM SEGNALAZIONE TICKET ---
     const createIssueForm = document.getElementById('createIssueForm');
     if (createIssueForm) {
         createIssueForm.addEventListener('submit', handleCreateIssue);
@@ -73,23 +68,21 @@ function logout() {
 }
 
 // --- LOGICA GESTIONE UTENTI (ADMIN) ---
-function openUserModal() {
-    document.getElementById('user-modal').style.display = 'flex';
-}
-function closeUserModal() {
-    document.getElementById('user-modal').style.display = 'none';
-}
+function openUserModal() { document.getElementById('user-modal').style.display = 'flex'; }
+function closeUserModal() { document.getElementById('user-modal').style.display = 'none'; }
 
 async function handleCreateUser(e) {
     e.preventDefault();
-    console.log("🔥 CLICK RICEVUTO! Inizio creazione utente...");
-
     const newUser = {
-        name: document.getElementById('newUserName').value,
-        email: document.getElementById('newUserEmail').value,
-        password: document.getElementById('newUserPassword').value,
+        name: document.getElementById('newUserName').value.trim(),
+        email: document.getElementById('newUserEmail').value.trim(),
+        password: document.getElementById('newUserPassword').value.trim(),
         role: document.getElementById('newUserRole').value
     };
+
+    if(!newUser.name || !newUser.email || !newUser.password) {
+        return Swal.fire('Attenzione', 'Tutti i campi sono obbligatori e non possono essere vuoti.', 'warning');
+    }
 
     try {
         const response = await fetch(USERS_URL + '/create', {
@@ -123,9 +116,17 @@ async function loadIssues() {
     }
 }
 
-// 👇 SOSTITUISCI LA FUNZIONE handleCreateIssue CON QUESTA VERSIONE "SAFE"
 async function handleCreateIssue(e) {
     e.preventDefault();
+
+    const titleVal = document.getElementById('title').value.trim();
+    const descVal = document.getElementById('description').value.trim();
+
+    if (!titleVal || !descVal) {
+        showToast("⚠️ Titolo e Descrizione non possono essere vuoti (o solo spazi)!", "warning");
+        return;
+    }
+
     const fileInput = document.getElementById('imageUpload');
     let finalImageBase64 = existingImageBase64;
 
@@ -133,10 +134,9 @@ async function handleCreateIssue(e) {
         try { finalImageBase64 = await toBase64(fileInput.files[0]); } catch (error) { return; }
     }
 
-    // Dati dal form
     let formData = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
+        title: titleVal,
+        description: descVal,
         type: document.getElementById('type').value,
         priority: document.getElementById('priority').value,
         assignee: null,
@@ -146,7 +146,6 @@ async function handleCreateIssue(e) {
     try {
         let response;
         if (currentEditingId) {
-            // ... Logica Modifica ...
             const original = allIssues.find(i => i.id === currentEditingId);
             if (original) {
                 formData.status = original.status;
@@ -157,8 +156,8 @@ async function handleCreateIssue(e) {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData)
             });
         } else {
-            // ... Logica Creazione ...
-            response = await fetch(API_URL + '?reporterId=' + currentUser.id, {
+
+            response = await fetch(API_URL + '/' + currentUser.id, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData)
             });
         }
@@ -171,7 +170,6 @@ async function handleCreateIssue(e) {
                 if (index !== -1) allIssues[index] = savedIssue;
                 showToast("Modifica salvata!", "success");
             } else {
-                // Arricchimento dati sicuro
                 const safeIssue = {
                     ...savedIssue,
                     reporter: savedIssue.reporter || currentUser,
@@ -184,33 +182,32 @@ async function handleCreateIssue(e) {
                 showToast("Nuovo ticket creato!", "success");
             }
 
-            // --- 🛡️ ZONA DI RESET SICURA (QUI C'ERA L'ERRORE) ---
-
-            // 1. Reset del form
             const form = document.getElementById('createIssueForm');
             if (form) form.reset();
 
-            // 2. Nascondi anteprima immagine (SOLO SE ESISTE)
             const imgContainer = document.getElementById('editImagePreviewContainer');
-            if (imgContainer) {
-                imgContainer.style.display = 'none';
-            }
+            if (imgContainer) imgContainer.style.display = 'none';
 
-            // 3. Reset variabili globali
             existingImageBase64 = null;
             currentEditingId = null;
 
-            // 4. Reset bottone
             const submitBtn = document.querySelector('.submit-btn');
             if (submitBtn) submitBtn.textContent = "Invia Segnalazione";
 
-            // Aggiorna la vista
             filterIssues(currentFilterMode);
 
         } else {
-            const errorText = await response.text();
-            console.error("Errore Server:", errorText);
-            showToast("Errore dal server: " + errorText, "error");
+            if (response.status === 500) {
+                showToast("⚠️ Errore: Il testo inserito è troppo lungo!", "error");
+            } else {
+                const errorText = await response.text();
+                let cleanMsg = errorText;
+                try {
+                    const jsonError = JSON.parse(errorText);
+                    if(jsonError.message) cleanMsg = jsonError.message;
+                } catch(e) { }
+                showToast("Errore: " + cleanMsg, "error");
+            }
         }
 
     } catch (error) {
@@ -221,8 +218,7 @@ async function handleCreateIssue(e) {
 
 function changeSortOrder(order) {
     currentSortOrder = order;
-    console.log("Ordino per:", order);
-    filterIssues(currentFilterMode); // Ricarica i ticket con il nuovo ordine
+    filterIssues(currentFilterMode);
 }
 
 function filterIssues(type) {
@@ -254,7 +250,7 @@ function getCurrentUserName() {
     return currentUser.name || currentUser.email;
 }
 
-// 👇 FUNZIONE RENDER MODIFICATA PER LA LOGICA "PRENDI IN CARICO"
+
 function renderIssues(listData) {
     const colOpen = document.getElementById('list-open');
     const colProgress = document.getElementById('list-in-progress');
@@ -268,7 +264,6 @@ function renderIssues(listData) {
     const priorityColors = { 'HIGH': '#e74c3c', 'MEDIUM': '#f39c12', 'LOW': '#27ae60' };
     const isUserAdmin = currentUser.role === 'ADMIN';
 
-    // --- ORDINAMENTO ---
     let sortedList = [...listData];
     sortedList.sort((a, b) => {
         if (currentSortOrder === 'DATE_DESC') {
@@ -283,7 +278,6 @@ function renderIssues(listData) {
         return 0;
     });
 
-    // --- RENDERING ---
     sortedList.forEach(issue => {
         const card = document.createElement('div');
         card.className = `card ${issue.type}`;
@@ -293,22 +287,26 @@ function renderIssues(listData) {
         const reporterName = issue.reporter ? issue.reporter.email.split('@')[0] : 'Anonimo';
         let imageHtml = issue.imageBase64 ? `<div style="margin: 10px 0; text-align: center;"><img src="${issue.imageBase64}" style="max-width: 100%; max-height: 150px; border-radius: 5px; cursor:pointer;" onclick="Swal.fire({imageUrl: '${issue.imageBase64}', showConfirmButton: false, background: 'transparent'})"></div>` : '';
 
-        // --- LOGICA PERMESSI ---
+        // --- DEFINIZIONE PERMESSI ---
         const reporterEmail = issue.reporter ? issue.reporter.email : '';
         const isMyTicket = reporterEmail === currentUser.email;
         const assigneeName = issue.assignee || '';
-        const status = (issue.status || 'TODO').toUpperCase(); // Normalizziamo lo status
+        const status = (issue.status || 'TODO').toUpperCase();
 
-        // 1. Posso prendere in carico (🔥) SE: è TODO/OPEN E NON è mio
+        const isAssignedToMe = assigneeName.toLowerCase().includes(currentUser.email.split('@')[0].toLowerCase()) || assigneeName.toLowerCase().includes(currentUser.name?.toLowerCase());
+
+        // 1. Prendi in carico: Solo se non è mio e non è già assegnato a me
         const canTakeCharge = (status === 'TODO' || status === 'OPEN') && !isMyTicket;
 
-        // 2. Posso chiudere (✅) SE: Sono Admin OPPURE sono l'assegnatario
-        const isAssignedToMe = assigneeName.toLowerCase().includes(currentUser.email.split('@')[0].toLowerCase()) || assigneeName.toLowerCase().includes(currentUser.name?.toLowerCase());
+        // 2. Chiudi: Admin OPPURE Assegnatario
         const canClose = (status === 'IN_PROGRESS') && (isUserAdmin || isAssignedToMe);
 
-        // 3. Posso tornare indietro (🔙) SE: Non è già in "Da Fare" E (Sono Admin O sono l'assegnatario)
-        // Questo permette di correggere errori
+        // 3. Revert: Admin OPPURE Assegnatario (se ho sbagliato a chiudere)
         const canRevert = (status !== 'TODO' && status !== 'OPEN') && (isUserAdmin || isAssignedToMe);
+
+        // 4.  MODIFICA: Admin OPPURE Assegnatario OPPURE Creatore (Reporter)
+        // Se il ticket è di un altro e non ci sto lavorando io, NON posso toccarlo.
+        const canEdit = isUserAdmin || isMyTicket || isAssignedToMe;
 
         card.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -318,28 +316,24 @@ function renderIssues(listData) {
                 </small>
             </div>
             <h4 style="margin:0 0 5px 0; color:#2c3e50;">${issue.title}</h4>
-            <div style="font-size:0.85em; color:#666; margin-bottom:5px;">${issue.description}</div>
+            <div style="font-size:0.85em; color:#666; margin-bottom:5px; word-wrap: break-word;">${issue.description}</div>
             ${imageHtml}
             <div style="font-size:0.75em; color:#888; margin-bottom:12px; margin-top: 10px;">📅 ${dateStr} • 🎤 <b>${reporterName}</b></div>
             <div style="border-top:1px solid #eee; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; flex-direction:column;"><span style="font-size:0.7em; color:#999;">Assegnato a:</span><span style="font-size:0.8em; font-weight:600;">👤 ${issue.assignee || 'Nessuno'}</span></div>
                 <div class="card-actions" style="display:flex; gap:5px;">
                     <button onclick="openComments(${issue.id}, '${issue.title.replace(/'/g, "\\'")}')" class="mini-btn" title="Chat">💬</button>
-
                     ${canRevert ? `<button onclick="updateStatus(${issue.id}, 'TODO')" class="mini-btn" title="Riporta in Da Fare" style="color:#e67e22;">🔙</button>` : ''}
-
                     ${canTakeCharge ? `<button onclick="updateStatus(${issue.id}, 'IN_PROGRESS')" class="mini-btn btn-progress" title="Prendi in carico">🔥</button>` : ''}
-
                     ${canClose ? `<button onclick="closeIssue(${issue.id})" class="mini-btn btn-done" title="Segna come Fatto">✅</button>` : ''}
 
-                    <button onclick="startEdit(${issue.id})" class="mini-btn" title="Modifica">✏️</button>
+                    ${canEdit ? `<button onclick="startEdit(${issue.id})" class="mini-btn" title="Modifica">✏️</button>` : ''}
 
                     ${isUserAdmin ? `<button onclick="archiveIssue(${issue.id})" class="mini-btn btn-archive" title="Archivia">📦</button>` : ''}
                 </div>
             </div>
         `;
 
-        // Smistamento nelle colonne
         if (status === 'IN_PROGRESS') { colProgress.appendChild(card); cProg++; }
         else if (['DONE', 'CLOSED', 'RESOLVED'].includes(status)) { colDone.appendChild(card); cDone++; }
         else { colOpen.appendChild(card); cOpen++; }
@@ -368,11 +362,32 @@ async function closeIssue(id) {
 }
 
 async function archiveIssue(id) {
-    if (currentUser.role !== 'ADMIN') return Swal.fire('Errore', 'Solo Admin', 'error');
-    const issue = allIssues.find(i => i.id === id);
-    issue.status = 'ARCHIVED';
-    await fetch(API_URL + '/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(issue) });
-    loadIssues();
+    // Usa 'currentUser' già definito all'inizio di script.js
+    if (!currentUser || currentUser.role !== 'ADMIN') {
+        Swal.fire('Errore', 'Solo gli amministratori possono archiviare.', 'error');
+        return;
+    }
+
+    try {
+        // Usa API_URL (definita come http://localhost:8080/api/issues)
+        const response = await fetch(`${API_URL}/${id}/archive`, {
+            method: 'PUT',
+            headers: {
+                'X-User-Role': currentUser.role // Invia il ruolo per il controllo backend
+            }
+        });
+
+        if (response.ok) {
+            Swal.fire('Archiviato!', 'Il bug è stato spostato nell\'archivio.', 'success');
+            loadIssues(); // Ricarica la board principale
+        } else {
+            const errorMsg = await response.text();
+            Swal.fire('Errore', errorMsg, 'error');
+        }
+    } catch (error) {
+        console.error("Errore archiviazione:", error);
+        Swal.fire('Errore', 'Problema di connessione al server', 'error');
+    }
 }
 
 function startEdit(id) {
@@ -382,8 +397,25 @@ function startEdit(id) {
     document.getElementById('type').value = issue.type;
     document.getElementById('priority').value = issue.priority;
     currentEditingId = id;
+
+    if (issue.imageBase64) {
+        document.getElementById('editImagePreview').src = issue.imageBase64;
+        document.getElementById('editImagePreviewContainer').style.display = 'block';
+        existingImageBase64 = issue.imageBase64;
+    } else {
+        document.getElementById('editImagePreviewContainer').style.display = 'none';
+        existingImageBase64 = null;
+    }
+
     document.querySelector('.submit-btn').textContent = "💾 Salva Modifiche";
     window.scrollTo(0, 0);
+}
+
+function clearImage() {
+    document.getElementById('imageUpload').value = "";
+    document.getElementById('editImagePreview').src = "";
+    document.getElementById('editImagePreviewContainer').style.display = 'none';
+    existingImageBase64 = null;
 }
 
 const toBase64 = file => new Promise((resolve, reject) => {
@@ -412,6 +444,7 @@ async function openComments(issueId, title) {
     await loadComments(issueId);
 }
 function closeComments() { document.getElementById('comment-modal').style.display = 'none'; }
+
 async function loadComments(issueId) {
     const res = await fetch(`http://localhost:8080/api/comments/issue/${issueId}`);
     const comments = await res.json();
@@ -423,10 +456,23 @@ async function loadComments(issueId) {
     });
     body.scrollTop = body.scrollHeight;
 }
+
 async function sendComment() {
-    const txt = document.getElementById('comment-input').value;
+    const input = document.getElementById('comment-input');
+    const txt = input.value.trim();
+
     if (!txt) return;
-    await fetch(`http://localhost:8080/api/comments?issueId=${currentChatIssueId}&authorId=${currentUser.id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: txt }) });
-    document.getElementById('comment-input').value = '';
+
+    await fetch(`http://localhost:8080/api/comments?issueId=${currentChatIssueId}&authorId=${currentUser.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: txt })
+    });
+
+    input.value = '';
     loadComments(currentChatIssueId);
+}
+
+function handleEnter(e) {
+    if (e.key === 'Enter') sendComment();
 }
