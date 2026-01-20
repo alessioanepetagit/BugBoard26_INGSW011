@@ -27,11 +27,11 @@ public class Comment {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    // 1. Costruttore senza argomenti (necessario per JPA)
+    // Costruttore senza argomenti
     public Comment() {
     }
 
-    // 2. Costruttore completo
+    // Costruttore completo
     public Comment(Long id, String text, User author, Issue issue, LocalDateTime createdAt) {
         this.id = id;
         this.text = text;
@@ -40,7 +40,7 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    // 3. Getter e Setter
+    // Getter e Setter
     public Long getId() {
         return id;
     }

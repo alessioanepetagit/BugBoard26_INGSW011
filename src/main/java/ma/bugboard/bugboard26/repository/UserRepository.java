@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    // Tieni SOLO questa riga (cancella le altre versioni duplicate)
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);

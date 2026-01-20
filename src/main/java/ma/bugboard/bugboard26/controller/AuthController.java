@@ -20,16 +20,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // 1. Cerca l'utente
+        // Cerca l'utente
         User user = userRepository.findByEmail(request.getEmail())
                 .orElse(null);
 
-        // 2. Controllo Password (semplice per ora)
+        //  Controllo Password
         if (user == null || !user.getPassword().equals(request.getPassword())) {
             return ResponseEntity.status(401).body("Email o Password errati!");
         }
 
-        // 3. Login OK!
+        // Login OK!
         return ResponseEntity.ok(user);
     }
 }

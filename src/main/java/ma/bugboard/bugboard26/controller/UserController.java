@@ -15,12 +15,12 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    // COSTRUTTORE MANUALE: Sostituisce Lombok per l'iniezione delle dipendenze
+    // COSTRUTTORE MANUALE
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    // 1. API PER CREARE UTENTE (Pannello Admin)
+    //  API PER CREARE UTENTE (Pannello Admin)
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         System.out.println("📢 [ADMIN] TENTATIVO CREAZIONE UTENTE:");
@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // 2. API PER IL LOGIN (Usata da login.html)
+    // API PER IL LOGIN (Usata da login.html)
     @PostMapping("/login")
     public User login(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
@@ -62,7 +62,7 @@ public class UserController {
         return user;
     }
 
-    // 3. API PER LA REGISTRAZIONE PUBBLICA (Tasto "Registrati")
+    //  API PER LA REGISTRAZIONE PUBBLICA (Tasto "Registrati")
     @PostMapping("/register")
     public User register(@RequestBody Map<String, String> userData) {
         String email = userData.get("email");

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DataInitializer {
 
-    // Logger manuale: Sostituisce l'annotazione @Slf4j di Lombok
+
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     @Bean
@@ -32,7 +32,7 @@ public class DataInitializer {
                     userRepository.save(admin);
                     log.info("✅ [SUCCESSO] UTENTE ADMIN CREATO CORRETTAMENTE!");
                 } catch (Exception e) {
-                    // Gestione errore sicura (già corretta per SonarQube)
+
                     log.error("❌ [ERRORE] Impossibile creare l'admin: ", e);
                 }
             } else {

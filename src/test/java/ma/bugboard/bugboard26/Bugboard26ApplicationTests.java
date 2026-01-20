@@ -32,7 +32,7 @@ class SimpleTest {
 		assertEquals("Michele", u.getName());
 		assertEquals("ADMIN", u.getRole());
 
-		// 2. SATURAZIONE ISSUE (Uso del costruttore completo per coprire tutte le righe)
+		// 2. SATURAZIONE ISSUE
 		List<Comment> commentList = new ArrayList<>();
 		LocalDateTime now = LocalDateTime.now();
 		Issue i = new Issue(99L, "Title", "Desc", "img64", "BUG", "HIGH", "OPEN", "Michele", now, u, commentList);

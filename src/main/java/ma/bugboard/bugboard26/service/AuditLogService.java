@@ -18,7 +18,7 @@ public class AuditLogService {
         log.setAction(action);
         log.setEntityId(entityId);
         log.setPayload(payload);
-        // Il timestamp lo mette da solo (vedi la classe Model che abbiamo fatto prima)
+
 
         auditLogRepository.save(log);
     }

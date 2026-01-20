@@ -21,7 +21,7 @@ public class AuditLog {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    // 1. Costruttore senza argomenti (necessario per JPA)
+    // 1. Costruttore senza argomenti
     public AuditLog() {
     }
 

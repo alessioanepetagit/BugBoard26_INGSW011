@@ -20,11 +20,11 @@ public class User {
 
     private String role;
 
-    // 1. Costruttore senza argomenti (necessario per JPA)
+    //  Costruttore senza argomenti
     public User() {
     }
 
-    // 2. Costruttore completo
+    // Costruttore completo
     public User(Long id, String email, String password, String name, String role) {
         this.id = id;
         this.email = email;
@@ -33,7 +33,7 @@ public class User {
         this.role = role;
     }
 
-    // 3. Getter e Setter manuali
+    //  Getter e Setter manuali
     public Long getId() {
         return id;
     }

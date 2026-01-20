@@ -20,7 +20,7 @@ public class CommentController {
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
 
-    // COSTRUTTORE MANUALE: Sostituisce @RequiredArgsConstructor e permette a Spring di funzionare senza Lombok
+    // COSTRUTTORE MANUALE
     public CommentController(CommentRepository commentRepository,
                              IssueRepository issueRepository,
                              UserRepository userRepository) {
@@ -29,13 +29,13 @@ public class CommentController {
         this.userRepository = userRepository;
     }
 
-    // 1. GET: Scarica i commenti di un ticket
+    // Scarica i commenti di un ticket
     @GetMapping("/issue/{issueId}")
     public List<Comment> getCommentsByIssue(@PathVariable Long issueId) {
         return commentRepository.findByIssueIdOrderByCreatedAtAsc(issueId);
     }
 
-    // 2. POST: Aggiungi un commento nuovo
+    //POST: Aggiungi un commento nuovo
     @PostMapping
     public ResponseEntity<?> addComment(
             @RequestParam Long issueId,
@@ -49,7 +49,7 @@ public class CommentController {
         User author = userRepository.findById(authorId)
                 .orElseThrow(() -> new RuntimeException("Autore con ID " + authorId + " non trovato"));
 
-        // 3. Creo e salvo il commento
+        // Creo e salvo il commento
         Comment newComment = new Comment();
         newComment.setText(commentData.getText());
         newComment.setIssue(issue);

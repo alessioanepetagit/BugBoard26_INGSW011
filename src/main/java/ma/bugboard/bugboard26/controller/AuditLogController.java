@@ -13,7 +13,7 @@ public class AuditLogController {
 
     private final AuditLogRepository auditLogRepository;
 
-    // COSTRUTTORE MANUALE: Sostituisce Lombok per l'iniezione delle dipendenze
+
     public AuditLogController(AuditLogRepository auditLogRepository) {
         this.auditLogRepository = auditLogRepository;
     }

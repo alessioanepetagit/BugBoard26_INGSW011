@@ -43,11 +43,11 @@ public class Issue {
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
-    // 1. Costruttore senza argomenti (necessario per JPA)
+    //  Costruttore senza argomenti
     public Issue() {
     }
 
-    // 2. Costruttore completo
+    // Costruttore completo
     @SuppressWarnings("all")
     public Issue(Long id, String title, String description, String imageBase64, String type,
                  String priority, String status, String assignee, LocalDateTime createdAt,
@@ -65,7 +65,7 @@ public class Issue {
         this.comments = comments;
     }
 
-    // 3. Getter e Setter
+    // Getter e Setter
     public Long getId() {
         return id;
     }
