@@ -12,7 +12,7 @@ const storedUser = localStorage.getItem('user');
 if (!storedUser) window.location.href = 'login.html';
 const currentUser = JSON.parse(storedUser);
 
-// --- 1. ASPETTIAMO CHE LA PAGINA SIA CARICA ---
+//  ASPETTIAMO CHE LA PAGINA SIA CARICA
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 PAGINA CARICATA: Inizializzazione script...");
 
@@ -67,7 +67,7 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// --- LOGICA GESTIONE UTENTI (ADMIN) ---
+// LOGICA GESTIONE UTENTI (ADMIN)
 function openUserModal() { document.getElementById('user-modal').style.display = 'flex'; }
 function closeUserModal() { document.getElementById('user-modal').style.display = 'none'; }
 
