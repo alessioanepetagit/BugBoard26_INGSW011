@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- FUNZIONI INTERFACCIA ---
+// FUNZIONI INTERFACCIA
 function setupUserInterface() {
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
@@ -105,7 +105,7 @@ async function handleCreateUser(e) {
     }
 }
 
-// --- LOGICA PRINCIPALE TICKET ---
+// LOGICA PRINCIPALE TICKET
 async function loadIssues() {
     try {
         const response = await fetch(API_URL + '?t=' + new Date().getTime());
@@ -287,7 +287,7 @@ function renderIssues(listData) {
         const reporterName = issue.reporter ? issue.reporter.email.split('@')[0] : 'Anonimo';
         let imageHtml = issue.imageBase64 ? `<div style="margin: 10px 0; text-align: center;"><img src="${issue.imageBase64}" style="max-width: 100%; max-height: 150px; border-radius: 5px; cursor:pointer;" onclick="Swal.fire({imageUrl: '${issue.imageBase64}', showConfirmButton: false, background: 'transparent'})"></div>` : '';
 
-        // --- DEFINIZIONE PERMESSI ---
+        // DEFINIZIONE PERMESSI
         const reporterEmail = issue.reporter ? issue.reporter.email : '';
         const isMyTicket = reporterEmail === currentUser.email;
         const assigneeName = issue.assignee || '';
@@ -295,17 +295,17 @@ function renderIssues(listData) {
 
         const isAssignedToMe = assigneeName.toLowerCase().includes(currentUser.email.split('@')[0].toLowerCase()) || assigneeName.toLowerCase().includes(currentUser.name?.toLowerCase());
 
-        // 1. Prendi in carico: Solo se non è mio e non è già assegnato a me
+        // Prendi in carico: Solo se non è mio e non è già assegnato a me
         const canTakeCharge = (status === 'TODO' || status === 'OPEN') && !isMyTicket;
 
-        // 2. Chiudi: Admin OPPURE Assegnatario
+        // Chiudi: Admin OPPURE Assegnatario
         const canClose = (status === 'IN_PROGRESS') && (isUserAdmin || isAssignedToMe);
 
-        // 3. Revert: Admin OPPURE Assegnatario (se ho sbagliato a chiudere)
+        // Revert: Admin OPPURE Assegnatario (se ho sbagliato a chiudere)
         const canRevert = (status !== 'TODO' && status !== 'OPEN') && (isUserAdmin || isAssignedToMe);
 
-        // 4.  MODIFICA: Admin OPPURE Assegnatario OPPURE Creatore (Reporter)
-        // Se il ticket è di un altro e non ci sto lavorando io, NON posso toccarlo.
+        //  MODIFICA: Admin OPPURE Assegnatario OPPURE Creatore (Reporter)
+        // Se il ticket è di un altro e non ci sto lavorando io, non posso toccarlo.
         const canEdit = isUserAdmin || isMyTicket || isAssignedToMe;
 
         card.innerHTML = `
@@ -344,7 +344,7 @@ function renderIssues(listData) {
     if (document.getElementById('count-done')) document.getElementById('count-done').textContent = cDone;
 }
 
-// --- AZIONI SECONDARIE ---
+// AZIONI SECONDARIE
 async function updateStatus(id, newStatus) {
     const issue = allIssues.find(i => i.id === id);
     if (!issue) return;
@@ -362,14 +362,12 @@ async function closeIssue(id) {
 }
 
 async function archiveIssue(id) {
-    // Usa 'currentUser' già definito all'inizio di script.js
     if (!currentUser || currentUser.role !== 'ADMIN') {
         Swal.fire('Errore', 'Solo gli amministratori possono archiviare.', 'error');
         return;
     }
 
     try {
-        // Usa API_URL (definita come http://localhost:8080/api/issues)
         const response = await fetch(`${API_URL}/${id}/archive`, {
             method: 'PUT',
             headers: {
