@@ -1,0 +1,36 @@
+* [33mfd05c19[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m  file nelle rispettive sottocartelle
+*   [33m915d556[m Risolto conflitto README e completata unificazione Monorepo
+[32m|[m[33m\[m  
+[32m|[m * [33m0e1f311[m[33m ([m[1;31morigin-frontend/main[m[33m)[m General Fixes (2)
+[32m|[m * [33madcae24[m General Fixes
+[32m|[m * [33m98fc4bd[m Fix: Only Admin can restore from archive
+[32m|[m * [33m1aa37e2[m Add student names to README for BugBoard26
+[32m|[m * [33m05eea2a[m Primo salvataggio: BugBoard 26 completo e funzionante
+[32m|[m * [33m9e38189[m FIX: Ripristinato stile CSS, Dark Mode e Chat leggibile
+[32m|[m * [33m2788da5[m Finale: Grafica Ultimate con sfondo sfumato e layout full-width
+[32m|[m * [33m1e577d2[m Prima versione completa con Kanban Board
+[32m|[m * [33m51972e9[m feat: initial commit of decoupled frontend
+*   [33m2de3694[m Import storia Backend
+[34m|[m[35m\[m  
+[34m|[m * [33mff0075d[m[33m ([m[1;31morigin-backend/main[m[33m)[m General fixes
+[34m|[m * [33me8ba49c[m General fixes
+[34m|[m * [33mbc7a0e9[m Consolidate author names in README
+[34m|[m * [33m88b7c8f[m Add initial README with project details
+[34m|[m * [33m37a41e5[m Fix: Only users can restore bugs from archive
+[34m|[m * [33m8d89ba2[m Final coverage update 89 percent
+[34m|[m * [33m7d211c2[m Primo salvataggio: BugBoard 26 completo e funzionante
+[34m|[m * [33m63db5a7[m FIX: Ripristinato stile CSS, Dark Mode e Chat leggibile
+[34m|[m * [33m78728ee[m Finale: Grafica Ultimate con sfondo sfumato e layout full-width
+[34m|[m * [33m5f49ea6[m Fix: Kanban board funzionante e Backend update corretto
+[34m|[m * [33mf9232de[m feat: added delete and close actions to frontend and backend
+[34m|[m * [33me9b9e2f[m feat: completed authentication system with login page
+[34m|[m * [33m39a4fae[m feat: added UI filters for bugs and features
+[34m|[m * [33mfde6083[m feat: completed frontend with issue creation form
+[34m|[m * [33m67922bc[m feat: backend completed with audit logs
+[34m|[m * [33m512741d[m feat: implemented Issue creation and relationship with User
+[34m|[m * [33m87f8f91[m feat: implemented User service and controller
+[34m|[m * [33m6e8e1a6[m feat: added AuditLog entity
+[34m|[m * [33m6657cde[m feat: added User and Issue domain entities
+[34m|[m * [33m9f3f0c1[m feat: configure database connection and hibernate
+[34m|[m * [33m0eba2c0[m chore: initial project setup
+* [33m0295186[m Initial commit per Monorepo BugBoard26
