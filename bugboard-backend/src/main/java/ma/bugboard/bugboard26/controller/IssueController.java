@@ -28,7 +28,7 @@ public class IssueController {
         return issueService.getAllIssues();
     }
 
-    // Endpoint per archiviare: riceve il ruolo dall'header della richiesta
+    // Endpoint per archiviare: riceve il ruolo dall'header della richiesta.
     @PutMapping("/{id}/archive")
     public ResponseEntity<?> archiveIssue(@PathVariable Long id, @RequestHeader("X-User-Role") String role) {
         try {
