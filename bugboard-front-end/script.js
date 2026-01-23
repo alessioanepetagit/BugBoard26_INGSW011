@@ -1,4 +1,4 @@
-// --- CONFIGURAZIONE E UTILS ---
+// CONFIGURAZIONE E UTILS
 const API_URL = 'http://localhost:8080/api/issues';
 const USERS_URL = 'http://localhost:8080/api/users';
 let allIssues = [];
