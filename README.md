@@ -1,4 +1,5 @@
 BugBoard26 🚀
+
 Sistema Cloud-Native di Bug Tracking con interfaccia Kanban.
 
 BugBoard26 è un'applicazione web progettata per gestire il workflow delle segnalazioni tecniche. Il progetto punta sulla separazione tra logica di business e interfaccia, sfruttando la scalabilità dei servizi AWS.
